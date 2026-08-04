@@ -593,3 +593,291 @@ Linux/commands.txt
 # One-Line Summary
 
 **A path is the address of a file or directory. Absolute paths start from `/` (root), while relative paths start from your current working directory.**
+# Linux Day 5 – Special Directory References
+
+## What are Special Directory References?
+
+Linux provides special symbols that represent commonly used directories.
+
+These are:
+
+* `.` (Current Directory)
+* `..` (Parent Directory)
+* `~` (Home Directory)
+
+They are **not commands**. They are **directory references (paths)**.
+
+---
+
+# 1. `.` (Current Directory)
+
+## What is it?
+
+Represents the directory you are currently working in.
+
+### Example
+
+Current directory:
+
+```text
+/home/kali/AR
+```
+
+Command:
+
+```bash
+ls .
+```
+
+Meaning:
+
+List the contents of the current directory.
+
+---
+
+# 2. `..` (Parent Directory)
+
+## What is it?
+
+Represents the parent (one level above) of the current directory.
+
+### Example
+
+Current directory:
+
+```text
+/ home/kali/AR
+```
+
+Parent directory:
+
+```text
+/home/kali
+```
+
+Command:
+
+```bash
+cd ..
+```
+
+Meaning:
+
+Move one level up to the parent directory.
+
+---
+
+# 3. `~` (Home Directory)
+
+## What is it?
+
+Represents the current user's home directory.
+
+For the `kali` user:
+
+```text
+~
+=
+/home/kali
+```
+
+### Example
+
+```bash
+cd ~
+```
+
+or simply
+
+```bash
+cd
+```
+
+Both take you to:
+
+```text
+/home/kali
+```
+
+---
+
+# Important Concept
+
+## Command + Target
+
+Almost every Linux command follows this pattern:
+
+```text
+Command + Target
+```
+
+Examples:
+
+```bash
+ls .
+```
+
+List the current directory.
+
+```bash
+ls ..
+```
+
+List the parent directory.
+
+```bash
+cd ..
+```
+
+Move to the parent directory.
+
+```bash
+cd ~
+```
+
+Move to the home directory.
+
+```bash
+file my.txt
+```
+
+Identify the type of `my.txt`.
+
+```bash
+cat my.txt
+```
+
+Display the contents of `my.txt`.
+
+---
+
+# `cd` Using Different Paths
+
+## Absolute Path
+
+```bash
+cd /home/kali/Documents/Linux
+```
+
+Starts from the root (`/`).
+
+Works from anywhere.
+
+---
+
+## Relative Path
+
+Current directory:
+
+```text
+/home/kali
+```
+
+Command:
+
+```bash
+cd Documents/Linux
+```
+
+Starts from the current working directory.
+
+---
+
+# Important Observation
+
+`ls` lists only the contents of the directory you specify.
+
+Example:
+
+Directory structure:
+
+```text
+AS
+├── AB.txt
+├── Linux
+│   └── AC.txt
+└── Notes
+```
+
+Running:
+
+```bash
+ls
+```
+
+or
+
+```bash
+ls .
+```
+
+shows:
+
+```text
+AB.txt
+Linux
+Notes
+```
+
+It does **not** automatically list files inside `Linux`.
+
+To list files inside `Linux`:
+
+```bash
+ls Linux
+```
+
+Output:
+
+```text
+AC.txt
+```
+
+---
+
+# Empty Directory
+
+If a directory exists but contains no files:
+
+```bash
+ls Notes
+```
+
+The command executes successfully but prints nothing.
+
+There is **no error**.
+
+"No such file or directory" appears only when the specified file or directory does not exist.
+
+---
+
+# Key Points
+
+* `.` = Current directory.
+* `..` = Parent directory.
+* `~` = Home directory.
+* These are directory references, not commands.
+* Think of Linux commands as **Command + Target**.
+* `ls` lists only the directory you specify.
+* `cd` changes your current working directory.
+* An empty directory produces no output with `ls`.
+* Linux is case-sensitive.
+
+---
+
+# Revision Questions
+
+1. What does `.` represent?
+2. What does `..` represent?
+3. What does `~` represent?
+4. Why are `.`, `..`, and `~` called directory references instead of commands?
+5. Explain the "Command + Target" concept with two examples.
+6. What is the difference between `ls`, `ls .`, and `ls Linux`?
+7. Why doesn't `ls` automatically display files inside subdirectories?
+8. What happens when you run `ls` on an empty directory?
+
+---
+
+# One-Line Summary
+
+**Linux commands usually follow the pattern "Command + Target". The symbols `.`, `..`, and `~` are special directory references that help you work with the current directory, parent directory, and home directory efficiently.**
