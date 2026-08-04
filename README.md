@@ -417,3 +417,179 @@ file my.txt
 # One-Line Summary
 
 **`mkdir` creates directories, `touch` creates empty files, `file` identifies the real type or state of a file, and a filename alone never changes what a file actually is.**
+# Linux Day 4 – Paths in Linux
+
+## What is a Path?
+
+A **path** is the address of a file or directory in the Linux filesystem.
+
+---
+
+## Why Do We Need Paths?
+
+Different files can have the same name but be stored in different directories.
+
+Example:
+
+```text id="r4vrfx"
+/home/kali/Documents/notes.txt
+
+/home/kali/Downloads/notes.txt
+```
+
+The path tells Linux exactly which file or directory you mean.
+
+---
+
+# Types of Paths
+
+1. Absolute Path
+2. Relative Path
+
+---
+
+# 1. Absolute Path
+
+## What is it?
+
+An **absolute path** is the complete address of a file or directory.
+
+It always starts from the root directory:
+
+```text id="zq3mt7"
+/
+```
+
+## Example
+
+```text id="w7k1nn"
+/home/kali/Bablu/my.txt
+```
+
+### Characteristics
+
+* Starts with `/`
+* Works from any location.
+* Includes every directory until the final file or directory.
+
+---
+
+# 2. Relative Path
+
+## What is it?
+
+A **relative path** starts from your current working directory.
+
+It does **not** start with `/`.
+
+## Example
+
+Current directory:
+
+```text id="0jlvlz"
+/home/kali/Bablu
+```
+
+Directory structure:
+
+```text id="h0z6py"
+Bablu
+├── Kumar
+│   └── report.txt
+├── my.txt
+└── my2.txt
+```
+
+Relative paths:
+
+```text id="eyzjlwm"
+my.txt
+Kumar/report.txt
+```
+
+---
+
+# Difference Between Absolute and Relative Paths
+
+| Absolute Path           | Relative Path                      |
+| ----------------------- | ---------------------------------- |
+| Starts from `/` (root). | Starts from the current directory. |
+| Complete address.       | Short address.                     |
+| Works from anywhere.    | Depends on your current location.  |
+
+---
+
+# Relation with `pwd`
+
+```bash id="y6z2ws"
+pwd
+```
+
+Displays your current working directory.
+
+Example:
+
+```text id="yitjlwm"
+/home/kali/Bablu
+```
+
+Relative paths are written based on this current location.
+
+---
+
+# Important Concepts
+
+* Every file and directory has a unique address.
+* An absolute path always begins with `/`.
+* A relative path never begins with `/`.
+* The last part of the path must be the object you want to reach.
+* Linux is **case-sensitive**.
+
+Example:
+
+```text id="pfehf7"
+Linux
+```
+
+and
+
+```text id="swlhlk"
+linux
+```
+
+are different names.
+
+---
+
+# Examples
+
+Absolute Path:
+
+```text id="f4u3hx"
+/home/kali/Documents/Linux/commands.txt
+```
+
+Relative Path (Current Directory = `/home/kali/Documents`):
+
+```text id="mpgfpv"
+Linux/commands.txt
+```
+
+---
+
+# Revision Questions
+
+1. What is a path?
+2. Why are paths required in Linux?
+3. What is an absolute path?
+4. What is a relative path?
+5. What is the main difference between absolute and relative paths?
+6. Why is `/home/kali/file.txt` an absolute path?
+7. Is `Documents/report.txt` an absolute or relative path?
+8. Why are `Linux` and `linux` considered different in Linux?
+
+---
+
+# One-Line Summary
+
+**A path is the address of a file or directory. Absolute paths start from `/` (root), while relative paths start from your current working directory.**
