@@ -1208,3 +1208,340 @@ Hidden files are **not** matched by `*` by default.
 # One-Line Summary
 
 **Wildcards allow Linux to match filenames using patterns: `*` matches zero or more characters, `?` matches exactly one character, and hidden files (starting with `.`) are not matched by `*` by default.**
+# Linux Day 7 — `find` Command
+
+## 1. What is `find`?
+
+`find` is used to **search for files and directories**.
+
+### Why do we need it?
+
+`ls` tells us what is available in a directory, but when we don't know where an item is, `find` can search through a directory and its subdirectories.
+
+### Basic structure
+
+```bash
+find <starting-location> <condition>
+```
+
+Example:
+
+```bash
+find /home/kali/SR -name "my1.txt"
+```
+
+Meaning:
+
+```text
+find              → search
+/home/kali/SR     → starting location
+-name             → search based on name
+"my1.txt"         → name/pattern to search for
+```
+
+---
+
+# 2. `find` Searches Subdirectories
+
+`find` searches the **starting directory and its subdirectories**.
+
+Example structure:
+
+```text
+SR
+├── my1.txt
+├── my2.txt
+├── SR1
+│   └── my1.txt
+└── SR2
+    └── my2.txt
+```
+
+Command:
+
+```bash
+find /home/kali/SR -name "my1.txt"
+```
+
+Result:
+
+```text
+/home/kali/SR/my1.txt
+/home/kali/SR/SR1/my1.txt
+```
+
+So `find` doesn't stop at `SR`; it continues into `SR1` and `SR2`.
+
+---
+
+# 3. Important: Starting Directory Is Also Checked
+
+If we run:
+
+```bash
+find /home/kali/SR -type d
+```
+
+`find` also checks `/home/kali/SR` itself.
+
+It does **not** mean "only search inside SR."
+
+Think:
+
+```text
+Starting point
+     ↓
+Check it
+     ↓
+Enter it
+     ↓
+Check contents
+     ↓
+Enter subdirectories
+     ↓
+Continue
+```
+
+---
+
+# 4. `-name`
+
+`-name` tells `find`:
+
+> **Search based on the name.**
+
+Example:
+
+```bash
+find /home/kali/SR -name "my1.txt"
+```
+
+This searches for an item whose name is `my1.txt`.
+
+Important:
+
+`-name` can match **files or directories**.
+
+It does not mean "search only files."
+
+---
+
+# 5. `find` + Wildcards
+
+We can use the wildcards we learned on Day 6.
+
+### `*`
+
+```bash
+find /home/kali/SR -name "my*.txt"
+```
+
+`*` means:
+
+> **Zero or more characters**
+
+Example matches:
+
+```text
+my.txt
+my1.txt
+my2.txt
+my10.txt
+my_notes.txt
+```
+
+---
+
+### `?`
+
+```bash
+find /home/kali/SR -name "my?.txt"
+```
+
+`?` means:
+
+> **Exactly one character**
+
+Examples:
+
+```text
+my1.txt    → match
+my2.txt    → match
+my10.txt   → no match
+```
+
+---
+
+# 6. `-type`
+
+`-type` tells `find`:
+
+> **What type of item should I search for?**
+
+## `-type d`
+
+```bash
+-type d
+```
+
+Means:
+
+> Search for directories.
+
+Example:
+
+```bash
+find /home/kali/SR -type d
+```
+
+---
+
+## `-type f`
+
+```bash
+-type f
+```
+
+Means:
+
+> Search for regular files.
+
+Example:
+
+```bash
+find /home/kali/SR -type f
+```
+
+---
+
+# 7. Connection With `ls -l`
+
+Earlier we learned:
+
+```text
+d  → directory
+-  → regular file
+```
+
+`find` uses the same idea:
+
+```text
+-type d → directory
+-type f → regular file
+```
+
+So:
+
+```text
+ls -l                  find
+
+d  → directory         -type d → directory
+-  → regular file      -type f → regular file
+```
+
+---
+
+# 8. Combining Conditions
+
+We can combine `-type` and `-name`.
+
+Example:
+
+```bash
+find /home/kali/SR -type f -name "my*.txt"
+```
+
+Meaning:
+
+> Search `/home/kali/SR` and its subdirectories for **regular files** whose names match `my*.txt`.
+
+Another example:
+
+```bash
+find /home/kali/SR -type d -name "my*.txt"
+```
+
+Meaning:
+
+> Search for **directories** whose names match `my*.txt`.
+
+---
+
+# 9. Mental Model of `find`
+
+Think of `find` as applying filters:
+
+```text
+Starting location
+       ↓
+/home/kali/SR
+       ↓
+Search through it
+       ↓
+-type f
+       ↓
+Only regular files
+       ↓
+-name "my*.txt"
+       ↓
+Name must match pattern
+       ↓
+Results
+```
+
+Each condition makes the search more specific.
+
+---
+
+# 10. Important Examples
+
+### Find a specific name
+
+```bash
+find /home/kali/SR -name "my1.txt"
+```
+
+### Find all `.txt` names beginning with `my`
+
+```bash
+find /home/kali/SR -name "my*.txt"
+```
+
+### Find only regular files
+
+```bash
+find /home/kali/SR -type f
+```
+
+### Find only directories
+
+```bash
+find /home/kali/SR -type d
+```
+
+### Find regular files matching a pattern
+
+```bash
+find /home/kali/SR -type f -name "my*.txt"
+```
+
+---
+
+# Key Points to Remember
+
+1. `find` → search.
+2. The path after `find` is the **starting location**.
+3. `find` searches the starting directory **and its subdirectories**.
+4. The starting directory itself is also checked.
+5. `-name` → search based on name.
+6. `-type d` → directories.
+7. `-type f` → regular files.
+8. `*` → zero or more characters.
+9. `?` → exactly one character.
+10. `-type` and `-name` can be combined to make a more specific search.
+
+---
+
+## One-Line Summary
+
+**`find` searches from a starting location through its subdirectories, and conditions such as `-name` and `-type` let us control exactly what we want to find.**
