@@ -1545,3 +1545,345 @@ find /home/kali/SR -type f -name "my*.txt"
 ## One-Line Summary
 
 **`find` searches from a starting location through its subdirectories, and conditions such as `-name` and `-type` let us control exactly what we want to find.**
+# 🐧 Linux Day 9 — Pipes, `wc`, and `tail`
+
+## 1. Pipe `|`
+
+### What is it?
+
+`|` sends the **output of one command** to another command.
+
+### Mental model
+
+```text
+Command 1
+   ↓
+ output
+   ↓
+   |
+   ↓
+Command 2
+```
+
+### Example
+
+```bash
+ls -la | grep "txt"
+```
+
+Meaning:
+
+> `ls -la` produces output → `grep` receives that output → keeps lines containing `txt`.
+
+### Important
+
+The pipe passes **output/text**, not the actual files or directories.
+
+---
+
+## 2. Multiple Pipes
+
+We can connect more than two commands:
+
+```bash
+ls -la | grep "txt" | grep "my"
+```
+
+Flow:
+
+```text
+ls -la
+  ↓
+grep "txt"
+  ↓
+grep "my"
+```
+
+Each command processes the output from the previous command.
+
+### Example
+
+```bash
+ls -la | grep "txt" | grep "2"
+```
+
+If the output contains:
+
+```text
+my1.txt
+my2.txt
+my3.txt
+```
+
+the final result is:
+
+```text
+my2.txt
+```
+
+### Important misconception
+
+```bash
+grep "2"
+```
+
+does **not** mean "second line."
+
+It means:
+
+> Search for the text/character `2`.
+
+---
+
+# 3. `grep -i` with Pipes
+
+```bash
+ls -la | grep -i "sr"
+```
+
+`-i` makes the search **case-insensitive**.
+
+It can match:
+
+```text
+sr
+SR
+Sr
+sR
+```
+
+### Remember
+
+```text
+grep -i → ignore uppercase/lowercase differences
+```
+
+---
+
+# 4. `wc`
+
+`wc` can count information from files or command output.
+
+Important options:
+
+```text
+-l → lines
+-w → words
+-c → bytes
+```
+
+---
+
+## 5. `wc -l`
+
+```bash
+wc -l grep_lab.txt
+```
+
+→ counts the number of **lines** in the file.
+
+### With a pipe:
+
+```bash
+ls -la | grep "txt" | wc -l
+```
+
+Flow:
+
+```text
+ls -la
+   ↓
+grep "txt"
+   ↓
+matching lines
+   ↓
+wc -l
+   ↓
+number of matching lines
+```
+
+If there are 3 `.txt` entries:
+
+```text
+3
+```
+
+---
+
+# 6. `wc -w`
+
+```bash
+wc -w grep_lab.txt
+```
+
+→ counts the **words** in the file.
+
+### Important distinction
+
+```text
+grep -w → match a whole word
+wc -w   → count words
+```
+
+The meaning of an option depends on the command.
+
+---
+
+# 7. Combining `grep` + `wc`
+
+```bash
+grep "Linux" grep_lab.txt | wc -l
+```
+
+Meaning:
+
+> Find lines containing `Linux` → count those matching lines.
+
+If 3 lines contain `Linux`:
+
+```text
+3
+```
+
+---
+
+# 8. `tail`
+
+`tail` displays the **end of a file**.
+
+```bash
+tail grep_lab.txt
+```
+
+By default:
+
+> `tail` displays the **last 10 lines**.
+
+### Important
+
+If the file has fewer than 10 lines:
+
+```text
+5 lines available
+↓
+tail asks for last 10
+↓
+only 5 exist
+↓
+all 5 are displayed
+```
+
+If the file has 100 lines:
+
+```text
+tail
+↓
+last 10 lines
+```
+
+---
+
+# 9. Why `tail` is useful in SOC
+
+Log files can contain thousands of lines.
+
+Instead of reading the entire log:
+
+```bash
+cat auth.log
+```
+
+you can quickly inspect the newest entries:
+
+```bash
+tail auth.log
+```
+
+This is useful when investigating recent activity.
+
+---
+
+# 🧠 Main Mental Model
+
+```text
+ls
+ ↓
+produces output
+ ↓
+|
+ ↓
+grep
+ ↓
+filters output
+ ↓
+|
+ ↓
+wc
+ ↓
+counts the result
+```
+
+Example:
+
+```bash
+ls -la | grep "txt" | wc -l
+```
+
+means:
+
+> List → filter for `txt` → count the matching lines.
+
+---
+
+# 📌 Commands Learned Today
+
+```bash
+ls -la | grep "txt"
+```
+
+```bash
+ls -la | grep -i "sr"
+```
+
+```bash
+ls -la | grep "txt" | grep "my"
+```
+
+```bash
+ls -la | grep "txt" | wc -l
+```
+
+```bash
+wc -l grep_lab.txt
+```
+
+```bash
+wc -w grep_lab.txt
+```
+
+```bash
+grep "Linux" grep_lab.txt | wc -l
+```
+
+```bash
+tail grep_lab.txt
+```
+
+---
+
+# ✅ Day 9 Revision Checklist
+
+* [ ] Understand what `|` does
+* [ ] Understand that the pipe passes command output
+* [ ] Understand multiple pipes
+* [ ] Know `grep -i`
+* [ ] Know `wc -l`
+* [ ] Know `wc -w`
+* [ ] Understand `grep | wc -l`
+* [ ] Know `tail`
+* [ ] Remember `tail` shows the last 10 lines by default
+* [ ] Understand why pipes are useful for log investigation
+
+### Key takeaway
+
+> **Pipes let us connect simple Linux commands together to filter, process, and count information.**
