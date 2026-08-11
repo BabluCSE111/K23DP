@@ -1887,3 +1887,374 @@ tail grep_lab.txt
 ### Key takeaway
 
 > **Pipes let us connect simple Linux commands together to filter, process, and count information.**
+# 🐧 Linux Day 10 — `tail`, `head` & Log Analysis
+
+## 1. `tail -n`
+
+`tail` shows the **end of a file**.
+
+```bash
+tail file
+```
+
+→ last **10 lines** by default.
+
+To choose the number of lines:
+
+```bash
+tail -n 5 file
+```
+
+→ last 5 lines.
+
+Examples:
+
+```bash
+tail -n 3 auth.log
+```
+
+→ last 3 lines.
+
+```bash
+tail -n 20 auth.log
+```
+
+→ last 20 lines.
+
+### Mental model
+
+```text
+tail → end
+-n   → how many lines
+```
+
+---
+
+# 2. `head`
+
+`head` shows the **beginning of a file**.
+
+```bash
+head auth.log
+```
+
+→ first 10 lines by default.
+
+To choose the number:
+
+```bash
+head -n 4 auth.log
+```
+
+→ first 4 lines.
+
+### Mental model
+
+```text
+head → beginning
+tail → end
+```
+
+---
+
+# 3. Important: Order of Pipes
+
+The order of commands changes the meaning.
+
+### Example 1
+
+```bash
+tail -n 5 auth.log | grep "Failed"
+```
+
+Meaning:
+
+> Take the last 5 lines → search for `Failed` among those 5.
+
+### Example 2
+
+```bash
+grep "Failed" auth.log | tail -n 5
+```
+
+Meaning:
+
+> Find all `Failed` lines → show the last 5 matching lines.
+
+These are **not the same**.
+
+---
+
+# 4. `grep` + `head`
+
+```bash
+grep "Failed password" auth.log | head -n 4
+```
+
+Meaning:
+
+> Find failed-password entries → show the **first 4 matching entries**.
+
+Important:
+
+```bash
+head -n 4 auth.log
+```
+
+→ first 4 lines of the **file**
+
+while:
+
+```bash
+grep "Failed password" auth.log | head -n 4
+```
+
+→ first 4 lines **matching the search**
+
+---
+
+# 5. `grep -n`
+
+```bash
+grep -n "Failed password" auth.log
+```
+
+`-n` displays the **line number** along with the matching line.
+
+Example:
+
+```text
+2:Aug 11 10:03 Failed password for admin
+4:Aug 11 10:07 Failed password for root
+```
+
+The number before `:` is the line number.
+
+---
+
+# 6. Practical SOC Investigation
+
+We created:
+
+```text
+~/LG/auth.log
+```
+
+We investigated failed login attempts.
+
+### Count failed logins
+
+```bash
+grep "Failed password" auth.log | wc -l
+```
+
+Result:
+
+```text
+5
+```
+
+→ **5 failed login attempts**
+
+### Find failed entries
+
+```bash
+grep "Failed password" auth.log
+```
+
+We found:
+
+```text
+admin
+root
+admin
+root
+admin
+```
+
+Therefore:
+
+```text
+admin → 3 failures
+root  → 2 failures
+```
+
+### Find line numbers
+
+```bash
+grep -n "Failed password" auth.log
+```
+
+Failed entries occurred on:
+
+```text
+2
+4
+6
+9
+11
+```
+
+---
+
+# 7. `wc` Review
+
+```bash
+wc -l
+```
+
+→ count lines
+
+```bash
+wc -w
+```
+
+→ count words
+
+Example:
+
+```bash
+grep "Failed password" auth.log | wc -l
+```
+
+→ count failed-login entries.
+
+---
+
+# 8. `grep -i` Review
+
+```bash
+grep -i "failed" auth.log
+```
+
+`-i` makes the search **case-insensitive**.
+
+It can match:
+
+```text
+failed
+Failed
+FAILED
+FaIlEd
+```
+
+---
+
+# 9. Filename Mistake We Encountered
+
+You accidentally created:
+
+```text
+auth.log~
+```
+
+instead of:
+
+```text
+auth.log
+```
+
+These are different filenames.
+
+```text
+auth.log
+auth.log~
+```
+
+Linux treats them as separate files.
+
+### Important reminder
+
+Linux is:
+
+> **case-sensitive and character-sensitive.**
+
+---
+
+# 🧠 Main Mental Model
+
+For log analysis, think:
+
+```text
+grep
+ ↓
+FIND
+
+|
+ ↓
+PASS OUTPUT
+
+head / tail
+ ↓
+TAKE FIRST / LAST RESULTS
+
+wc
+ ↓
+COUNT
+```
+
+Example:
+
+```bash
+grep "Failed password" auth.log | tail -n 5
+```
+
+means:
+
+> Find failed-password entries → take the last 5 matching entries.
+
+---
+
+# 📌 Commands Learned Today
+
+```bash
+tail auth.log
+```
+
+```bash
+tail -n 5 auth.log
+```
+
+```bash
+head auth.log
+```
+
+```bash
+head -n 4 auth.log
+```
+
+```bash
+grep -n "Failed password" auth.log
+```
+
+```bash
+grep "Failed password" auth.log | head -n 4
+```
+
+```bash
+grep "Failed password" auth.log | tail -n 5
+```
+
+```bash
+grep "Failed password" auth.log | wc -l
+```
+
+---
+
+# ✅ Day 10 Revision Checklist
+
+* [ ] Understand `tail`
+* [ ] Understand `tail -n`
+* [ ] Understand `head`
+* [ ] Understand `head -n`
+* [ ] Know the difference between `head`/`tail`
+* [ ] Understand pipe order
+* [ ] Understand `grep | head`
+* [ ] Understand `grep | tail`
+* [ ] Know `grep -n`
+* [ ] Use `grep + wc` to count log entries
+* [ ] Understand the SOC log-investigation workflow
+
+### 🔥 Key takeaway
+
+> **The order of commands in a pipeline matters. First decide what data you want, then decide how you want to filter, limit, or count it.**
