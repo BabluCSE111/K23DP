@@ -1,0 +1,297 @@
+# Linux Day 8 — `grep`
+
+## 1. What is `grep`?
+
+`grep` is used to **search for text inside files**.
+
+### Mental model
+
+```text
+find → searches for files/directories
+grep → searches for text inside files
+```
+
+Example:
+
+```bash
+grep "Linux" grep_lab.txt
+```
+
+This displays only the lines containing `Linux`.
+
+---
+
+# 2. Basic `grep` Syntax
+
+```bash
+grep "text" filename
+```
+
+Example:
+
+```bash
+grep "Linux" grep_lab.txt
+```
+
+Meaning:
+
+```text
+grep → search text
+"Linux" → text/pattern to search
+grep_lab.txt → file to search inside
+```
+
+---
+
+# 3. `grep` Searches Line by Line
+
+If a file contains:
+
+```text
+Linux is powerful
+Linux is used in cybersecurity
+Windows is also an operating system
+Linux is case sensitive
+Cybersecurity requires practice
+```
+
+Then:
+
+```bash
+grep "Linux" grep_lab.txt
+```
+
+shows only:
+
+```text
+Linux is powerful
+Linux is used in cybersecurity
+Linux is case sensitive
+```
+
+`grep` does not display the entire file.
+
+---
+
+# 4. `grep` Is Case-Sensitive
+
+By default, `grep` treats uppercase and lowercase as different.
+
+```text
+Linux
+linux
+LINUX
+```
+
+These are different searches.
+
+Example:
+
+```bash
+grep "Cybersecurity" grep_lab.txt
+```
+
+and:
+
+```bash
+grep "cybersecurity" grep_lab.txt
+```
+
+can produce different results.
+
+---
+
+# 5. `-i` — Ignore Case
+
+`-i` tells `grep` to ignore uppercase/lowercase differences.
+
+```bash
+grep -i "cybersecurity" grep_lab.txt
+```
+
+This can match:
+
+```text
+cybersecurity
+Cybersecurity
+CYBERSECURITY
+```
+
+### Remember
+
+```text
+-i → ignore case
+```
+
+---
+
+# 6. `-w` — Match Whole Word
+
+Normally:
+
+```bash
+grep "is" grep_lab.txt
+```
+
+searches for the text/pattern `is`.
+
+`is` can appear as part of another word.
+
+With:
+
+```bash
+grep -w "is" grep_lab.txt
+```
+
+`-w` tells `grep` to match `is` as a **complete word**.
+
+### Mental model
+
+```text
+grep "is"
+→ search for the text "is"
+
+grep -w "is"
+→ search for the complete word "is"
+```
+
+Important:
+
+`-w` may produce the same output as normal `grep` if the searched text is already only appearing as a complete word.
+
+---
+
+# 7. `-n` — Show Line Numbers
+
+`-n` tells `grep` to display the **line number** along with the matching line.
+
+Example:
+
+```bash
+grep -n "Linux" grep_lab.txt
+```
+
+Possible output:
+
+```text
+20:Linux is powerful
+21:Linux is used in cybersecurity
+23:Linux is case sensitive
+```
+
+The number before `:` is the line number.
+
+### Why is this useful?
+
+Especially when working with large files or logs.
+
+Instead of only knowing:
+
+```text
+Failed password
+```
+
+you can know:
+
+```text
+487:Failed password
+1204:Failed password
+```
+
+and immediately know where the matching lines are located.
+
+---
+
+# 8. Options Learned Today
+
+| Option | Meaning           |
+| ------ | ----------------- |
+| `-i`   | Ignore case       |
+| `-w`   | Match whole word  |
+| `-n`   | Show line numbers |
+
+---
+
+# 9. Important Commands
+
+### Search text
+
+```bash
+grep "Linux" grep_lab.txt
+```
+
+### Ignore case
+
+```bash
+grep -i "linux" grep_lab.txt
+```
+
+### Match complete word
+
+```bash
+grep -w "is" grep_lab.txt
+```
+
+### Show line numbers
+
+```bash
+grep -n "Linux" grep_lab.txt
+```
+
+---
+
+# 10. `find` vs `grep`
+
+This distinction is important:
+
+```text
+find
+ ↓
+searches FILES and DIRECTORIES
+
+grep
+ ↓
+searches TEXT inside FILES
+```
+
+Example:
+
+```bash
+find /home/kali -name "grep_lab.txt"
+```
+
+→ Find where the file is.
+
+```bash
+grep "Linux" grep_lab.txt
+```
+
+→ Find which lines inside the file contain `Linux`.
+
+---
+
+# 🧠 Final Mental Model
+
+```text
+grep "Linux" file
+       ↓
+search text inside file
+       ↓
+matching lines
+
+grep -i
+       ↓
+ignore case
+
+grep -w
+       ↓
+whole word
+
+grep -n
+       ↓
+show line numbers
+```
+
+## Key takeaway
+
+**`grep` searches text inside files, and its options let us control how that search is performed.**
