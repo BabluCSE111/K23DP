@@ -250,3 +250,178 @@ sudo readlink -f /proc/PID/exe
 dpkg -S /path/to/executable
 dpkg -s package-name
 ```
+# Linux Services & systemd — Quick Notes
+
+## 1. systemd
+
+`systemd` manages services and background processes on Linux.
+
+Use `systemctl` to inspect and manage services.
+
+## 2. Essential Commands
+
+```bash
+systemctl status <service>
+```
+
+Detailed current status: running, stopped, failed, PID, logs, etc.
+
+```bash
+systemctl is-active <service>
+```
+
+Checks whether the service is currently running.
+
+```bash
+systemctl is-enabled <service>
+```
+
+Checks whether the service is configured to start automatically at boot.
+
+```bash
+systemctl cat <service>
+```
+
+Shows the service's systemd configuration.
+
+## 3. Important Status Values
+
+| Value              | Meaning                              |
+| ------------------ | ------------------------------------ |
+| `active (running)` | Service is running now               |
+| `inactive`         | Service is not running now           |
+| `failed`           | Service encountered a failure        |
+| `enabled`          | Configured to start automatically    |
+| `disabled`         | Not configured for automatic startup |
+
+> **Important:** `enabled` does not mean `running`.
+
+## 4. systemd Service File
+
+Example:
+
+```ini
+[Unit]
+Description=Regular background program processing daemon
+Documentation=man:cron(8)
+After=remote-fs.target nss-user-lookup.target
+
+[Service]
+EnvironmentFile=-/etc/default/cron
+ExecStart=/usr/sbin/cron -f $EXTRA_OPTS
+Restart=on-failure
+KillMode=process
+SyslogFacility=cron
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### `[Unit]`
+
+Basic service information and startup relationships.
+
+* `Description=` → human-readable purpose of the service.
+* `Documentation=` → points to documentation.
+* `After=` → controls startup order.
+
+### `[Service]`
+
+Defines how systemd runs and manages the service.
+
+* `EnvironmentFile=` → loads environment settings.
+* `ExecStart=` → command used to start the service.
+* `Restart=on-failure` → restart if the service fails.
+* `KillMode=` → controls how service processes are stopped.
+* `SyslogFacility=` → categorizes service log messages.
+
+### `[Install]`
+
+Defines how the service is connected to startup when enabled.
+
+* `WantedBy=` → specifies the systemd target associated with the service.
+
+## 5. Blue Team Investigation
+
+A useful investigation chain:
+
+```text
+Service
+   ↓
+Main PID
+   ↓
+User
+   ↓
+PPID / Parent
+   ↓
+Executable
+   ↓
+Configuration
+   ↓
+Boot Configuration
+```
+
+### Example: cron
+
+```bash
+systemctl status cron
+```
+
+```text
+Main PID: 756 (cron)
+```
+
+Find the user, PID, parent and command:
+
+```bash
+ps -p 756 -o user,pid,ppid,cmd
+```
+
+Find the actual executable:
+
+```bash
+sudo readlink -f /proc/756/exe
+```
+
+Result:
+
+```text
+/usr/sbin/cron
+```
+
+Investigation:
+
+```text
+cron service
+    ↓
+PID 756
+    ↓
+root
+    ↓
+PPID 1 → systemd
+    ↓
+/usr/sbin/cron
+    ↓
+enabled at boot
+```
+
+## 6. Key Commands to Remember
+
+```bash
+systemctl status <service>
+systemctl is-active <service>
+systemctl is-enabled <service>
+systemctl cat <service>
+
+ps -p <PID> -o user,pid,ppid,cmd
+sudo readlink -f /proc/<PID>/exe
+```
+
+### Key Distinction
+
+```text
+status      → What is happening now?
+is-active   → Is it running now?
+is-enabled  → Will it start automatically?
+cat         → How is it configured?
+```
